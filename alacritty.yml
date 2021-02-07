@@ -1,0 +1,201 @@
+# Configuration for Alacritty, the GPU enhanced terminal emulator.
+
+# Any items in the `env` entry below will be added as
+# environment variables. Some entries may override variables
+# set by alacritty itself.
+env:
+  # TERM variable
+  #
+  # This value is used to set the `$TERM` environment variable for
+  # each instance of Alacritty. If it is not present, alacritty will
+  # check the local terminfo database and use `alacritty` if it is
+  # available, otherwise `xterm-256color` is used.
+  TERM: xterm-256color
+
+window:
+  # Window dimensions (changes require restart)
+  #
+  # Specified in number of columns/lines, not pixels.
+  # If both are `0`, this setting is ignored.
+  #dimensions:
+  #  columns: 0
+  #  lines: 0
+
+  # Window position (changes require restart)
+  #
+  # Specified in number of pixels.
+  # If the position is not set, the window manager will handle the placement.
+  #position:
+  #  x: 0
+  #  y: 0
+
+  # Window padding (changes require restart)
+  #
+  # Blank space added around the window in pixels. This padding is scaled
+  # by DPI and the specified value is always added at both opposing sides.
+  padding:
+    #x: 10
+    y: 5
+
+  # Spread additional padding evenly around the terminal content.
+  dynamic_padding: true
+
+  # Window decorations
+  decorations: transparent
+
+  # Window title
+  title: Alacritty
+
+  # Allow terminal applications to change Alacritty's window title.
+  dynamic_title: true
+
+scrolling:
+  # Maximum number of lines in the scrollback buffer.
+  # Specifying '0' will disable scrolling.
+  # Change later when using tmux, tmux uses its own scroll
+  #history: 1000
+  history: 0
+
+  # Scrolling distance multiplier.
+  #multiplier: 3
+
+# Font configuration
+font:
+  # Normal (roman) font face
+  size: 13.5
+  normal:
+    #family: "FiraMono Nerd Font Mono"
+    #family: "MesloLGSDZ Nerd Font"
+    family: "Hack Nerd Font Mono"
+
+
+draw_bold_text_with_bright_colors: true
+schemes:
+  snazzy: &custom_snazzy
+    primary:
+    #background: '#282a36'
+      background: '#1b2738'
+      foreground: '#eff0eb'
+
+    cursor:
+      cursor: '#97979b'
+
+    selection:
+      text:       '#282a36'
+      background: '#feffff'
+
+    normal:
+      black:   '#282a36'
+      red:     '#ff5c57'
+      green:   '#5af78e'
+      yellow:  '#f3f99d'
+      blue:    '#57c7ff'
+      magenta: '#ff6ac1'
+      cyan:    '#9aedfe'
+      white:   '#f1f1f0'
+  
+    bright:
+      black:   '#686868'
+      red:     '#ff5c57'
+      green:   '#5af78e'
+      yellow:  '#f3f99d'
+      blue:    '#57c7ff'
+      magenta: '#ff6ac1'
+      cyan:    '#9aedfe'
+      white:   '#eff0eb'
+   
+  rigel: &rigel
+    primary:
+      background: '#002635'
+      foreground: '#e6e6dc'
+
+    # Normal colors
+    normal:
+      black:   '#00384d'
+      red:     '#c43061'
+      green:   '#7fc06e'
+      yellow:  '#f08e48'
+      blue:    '#1c8db2'
+      magenta: '#c694ff'
+      cyan:    '#00cccc'
+      white:   '#77929e'
+
+    # Bright colors
+    bright:
+      black:   '#517f8d'
+      red:     '#ff5a67'
+      green:   '#9cf087'
+      yellow:  '#ffcc1b'
+      blue:    '#7eb2dd'
+      magenta: '#fb94ff'
+      cyan:    '#00ffff'
+      white:   '#b7cff9'
+
+    cursor:
+      # text: "#002635"
+      cursor: "#ffcc1b"
+
+
+colors: *rigel
+
+indexed_colors:
+    - { index: 16, color: '#fe8019' }
+    - { index: 17, color: '#d65d0e' }
+    - { index: 18, color: '#3c3836' }
+    - { index: 19, color: '#504945' }
+    - { index: 20, color: '#bdae93' }
+    - { index: 21, color: '#ebdbb2' }
+
+# Window opacity as a floating point number from `0.0` to `1.0`.
+# The value `0.0` is completely transparent and `1.0` is opaque.
+background_opacity: 0.99
+
+#selection:
+  # This string contains all characters that are used as separators for "semantic words" in Alacritty.
+  #semantic_escape_chars: ",│`|:\"' ()[]{}<>\t"
+
+  # When set to `true`, selected text will be copied to the primary clipboard.
+  #save_to_clipboard: false
+
+#cursor:
+  # Cursor style
+  #
+  # Values for `style`:
+  #   - ▇ Block
+  #   - _ Underline
+  #   - | Beam
+  #style: Block
+
+  # Vi mode cursor style
+  #
+  # If the vi mode cursor style is `None` or not specified, it will fall back to
+  # the style of the active value of the normal cursor.
+  #
+  # See `cursor.style` for available options.
+  #vi_mode_style: None
+
+  # If this is `true`, the cursor will be rendered as a hollow box when the
+  # window is not focused.
+  #unfocused_hollow: true
+
+  # Thickness of the cursor relative to the cell width as floating point number
+  # from `0.0` to `1.0`.
+  #thickness: 0.15
+
+# Live config reload (changes require restart)
+#live_config_reload: true
+
+# Shell
+#
+# You can set `shell.program` to the path of your favorite shell, e.g. `/bin/fish`.
+# Entries in `shell.args` are passed unmodified as arguments to the shell.
+#
+# Default:
+#   - (macOS) /bin/bash --login
+#   - (Linux/BSD) user login shell
+#   - (Windows) powershell
+shell:
+   program: /usr/local/bin/fish
+   args:
+     - --login
+

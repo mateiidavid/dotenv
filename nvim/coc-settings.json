@@ -1,0 +1,21 @@
+{
+ "languageserver": {
+    "golang": {
+      "command": "gopls",
+      "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/"],
+      "filetypes": ["go"],
+      "initializationOptions": {
+        "usePlaceholders": true
+      }
+    }
+  },
+ "python.jediEnabled": false,
+ "python.formatting.provider": "black",
+ "rust-analyzer.inlayHints.refreshOnInsertMode": true,
+ "eslint.filetypes": ["javascript", "javascriptreact", "typescriptreact", "typescript"],
+ "tsserver.formatOnType": true,
+ "coc.preferences.formatOnType":true,
+ //"diagnostic.displayByAle": true,
+ "coc.preferences.formatOnSaveFiletypes": [
+   "python", "go", "rust", "typescriptreact", "javascript", "javascriptreact", "typescript"]
+}
