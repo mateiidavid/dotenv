@@ -39,3 +39,4 @@ set -x ARTY_LAB "public-docker-virtual.artylab.expedia.biz"
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/madavid/Downloads/google-cloud-sdk/path.fish.inc' ]; . '/Users/madavid/Downloads/google-cloud-sdk/path.fish.inc'; end
+set -g fish_user_paths "/usr/local/opt/llvm/bin" $fish_user_paths
