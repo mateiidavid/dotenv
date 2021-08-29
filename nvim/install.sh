@@ -9,7 +9,8 @@ mkdir -p $INSTALL_PATH/plugin
 mkdir -p $INSTALL_PATH/lua
 
 echo "Symlinking files from ${REPO_PATH} to ${INSTALL_PATH}..."
-for f in `find . -regex ".*\.vim$\|.lua$"`; do
+files=$(find . | grep -e '.*\.vim$')
+for f in $files; do
 	echo "Linking $f"
 	rm -rf $INSTALL_PATH/$f
 	ln -s $REPO_PATH/$f $INSTALL_PATH/$f
