@@ -4,6 +4,52 @@
 "
 let mapleader = " " " -- leader set to <space>
 
+" ++++++++++++++++++++++++
+" |    SET OPTIONS       |
+" ++++++++++++++++++++++++
+"
+set tabstop=4 softtabstop=4
+set shiftwidth=4
+set expandtab
+set smartindent
+set nu
+set relativenumber
+set nohlsearch
+set hidden
+set noerrorbells
+" nvim history, not important to know just take it as it is I guess
+set noswapfile
+set nobackup
+set undodir=~/.nvim/undodir
+set undofile
+set mouse=a
+set incsearch
+set scrolloff=8
+"set termguicolors
+set colorcolumn=120
+highlight ColorColumn ctermbg=0 guibg=lightgrey
+set formatoptions=tc " -- wrap text and comments using textwidth
+set formatoptions+=r " -- continue comments when pressing ENTER in I mode
+set formatoptions+=b " -- auto-wrap in insert mode, and do not wrap old long lines
+syntax enable " -- enable syntax
+filetype plugin indent on " -- file id, plugin and identing
+set termguicolors " -- won't get rid of this it seems, required by ayu
+
+" ++++++++++++++++
+" |   LSP SETS   |
+" ++++++++++++++++
+"
+" Set completeopt to have a better completion experience
+" :help completeopt
+" menuone: popup even when there's only one match
+" noinsert: Do not insert text until a selection is made
+" noselect: Do not select, force user to select one from the menu
+set completeopt=menuone,noinsert,noselect
+set shortmess+=c  " -- avoid showing extra messages when using completion
+set cmdheight=2 " -- give more space for displaying messages
+set updatetime=300 " -- longer updates lead to oticeable delays
+set signcolumn=number " -- merge column + sign
+
 " Remapping
 " 
 " mode <> lhs (what-to-execute-to-execute) rhs (thing-you-want-to-execute)
@@ -16,59 +62,70 @@ let mapleader = " " " -- leader set to <space>
 " |    PLUG       |
 " +++++++++++++++++
 "
-call plug#begin(stdpath('data').'/plugged')
+call plug#begin('~/.vim/plugged')
 
-" Collection of common configurations for the Nvim LSP client
-Plug 'neovim/nvim-lspconfig'
+" CoC Nvim release branch
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 
-" Extensions to built-in LSP, e.g inlay hints.
-Plug 'nvim-lua/lsp_extensions.nvim'
-
-" Autocompletion framework for built-in LSP
-Plug 'nvim-lua/completion-nvim'
+" Ayu Nvim color scheme
+Plug 'ayu-theme/ayu-vim'
 
 call plug#end()
+let ayucolor="mirage"
+colorscheme ayu
 
-
-" ++++++++++++++++++++
-" |     LSP          |
-" ++++++++++++++++++++
+" ++++++++++++
+" |   LSP    |
+" ++++++++++++
 "
-" Set completeopt to have a better completion experience
-" :help completeopt
-" menuone: popup even when there's only one match
-" noinsert: Do not insert text until a selection is made
-" noselect: Do not select, force user to select one from the menu
-set completeopt=menuone,noinsert,noselect
+" Use tab to trigger completion.
+" NOTE: use ':verbose imap <tab>' to make sure
+" it is not mapped to something else.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 
-" Avoid showing extra messages when using completion
-set shortmess+=c
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
 
-" Configure LSP
-" https://github.com/neovim/nvim-lspconfig#rust_analyzer
+"
+" ++++++++++++++
+" |  KEY MAPS  |
+" ++++++++++++++
+"
+" Trigger completion using <c-space>
+inoremap <silent><expr> <c-space> coc#refresh()
 
-lua << EOF
-local nvim_lsp = require'lspconfig'
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
-local on_attach = function(client)
-    require'completion'.on_attach(client)
-end
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
-nvim_lsp.rust_analyzer.setup({
-    on_attach=on_attach,
-    settings = {
-        ["rust-analyzer"] = {
-            assist = {
-                importGranularity = "module",
-                importPrefix = "by_self",
-            },
-            cargo = {
-                loadOutDirsFromCheck = true
-            },
-            procMacro = {
-                enable = true
-            },
-        }
-    }
-})
-EOF
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+nmap <leader>s  v<Plug>(coc-codeaction-selected)
+
+
