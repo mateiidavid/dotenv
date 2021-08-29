@@ -1,10 +1,14 @@
+" ++++++++++++++++++++++++
+" |    SET OPTIONS       |
+" ++++++++++++++++++++++++
+"
 set tabstop=4 softtabstop=4
 set shiftwidth=4
 set expandtab
 set smartindent
 set nu
 set relativenumber
-"set nohlsearch
+set nohlsearch
 set hidden
 set noerrorbells
 " nvim history, not important to know just take it as it is I guess
@@ -15,7 +19,7 @@ set undofile
 set mouse=a
 set incsearch
 set scrolloff=8
-set termguicolors
+"set termguicolors
 set colorcolumn=120
 highlight ColorColumn ctermbg=0 guibg=lightgrey
 set formatoptions=tc " wrap text and comments using textwidth
