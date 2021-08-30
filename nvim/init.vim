@@ -64,8 +64,14 @@ set signcolumn=number " -- merge column + sign
 "
 call plug#begin('~/.vim/plugged')
 
-" CoC Nvim release branch
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+" Collection of common configurations for the Nvim LSP client
+Plug 'neovim/nvim-lspconfig'
+
+" Extensions to built-in LSP, for example, providing type inlay hints
+Plug 'nvim-lua/lsp_extensions.nvim'
+
+" Autocompletion framework for built-in LSP
+Plug 'nvim-lua/completion-nvim'
 
 " Ayu Nvim color scheme
 Plug 'ayu-theme/ayu-vim'
@@ -74,25 +80,6 @@ call plug#end()
 let ayucolor="mirage"
 colorscheme ayu
 
-" ++++++++++++
-" |   LSP    |
-" ++++++++++++
-"
-" Use tab to trigger completion.
-" NOTE: use ':verbose imap <tab>' to make sure
-" it is not mapped to something else.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-"
 " ++++++++++++++
 " |  KEY MAPS  |
 " ++++++++++++++
@@ -102,35 +89,81 @@ nnoremap <leader>h :wincmd h<CR>
 nnoremap <leader>j :wincmd j<CR>
 nnoremap <leader>k :wincmd k<CR>
 nnoremap <leader>l :wincmd l<CR>
-" Trigger completion using <c-space>
-inoremap <silent><expr> <c-space> coc#refresh()
 
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+" NOTE: use ':verbose imap <tab>' to make sure
+" it is not mapped to something else.
+" Use <Tab> and <S-Tab> to navigate through popup menu
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+" use <Tab> as trigger keys
+imap <Tab> <Plug>(completion_smart_tab)
+imap <S-Tab> <Plug>(completion_smart_s_tab)
 
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
+nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> [g    <cmd>lua vim.lsp.diagnostic.goto_prev()<CR>
+nnoremap <silent> ]g    <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
+nnoremap <silent> <leader>a <cmd>lua vim.lsp.buf.code_action()<CR>
+nnoremap <silent> <leader>e <cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
+nnoremap <silent> <leader>f <cmd>lua vim.lsp.buf.formatting()<CR>
 
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  elseif (coc#rpc#ready())
-    call CocActionAsync('doHover')
-  else
-    execute '!' . &keywordprg . " " . expand('<cword>')
-  endif
-endfunction
+" ++++++++++++
+" |   LSP    |
+" ++++++++++++
+"
+"
 
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')
-nmap <leader>s  v<Plug>(coc-codeaction-selected)
+lua << EOF
 
+-- nvim_lsp object
+local nvim_lsp = require'lspconfig'
 
+-- function to attach completion when setting up lsp
+local on_attach = function(client)
+    require'completion'.on_attach(client)
+end
+
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+
+-- Enable rust_analyzer
+nvim_lsp.rust_analyzer.setup({
+    capabilities=capabilities,
+    on_attach=on_attach
+})
+
+-- Enable gopls
+nvim_lsp.gopls.setup{
+    cmd = {"gopls", "--remote=auto"},
+    capabilities=capabilities,
+    on_attach=on_attach,
+    init_options = {
+        usePlaceholders=true,
+        completeUnimported=true,
+    }
+}
+
+-- Enable diagnostics
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+  vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = false,
+    signs = true,
+    update_in_insert = true,
+  }
+)
+
+EOF
+
+" Enable type inlay hints
+autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *
+\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
+" Show diagnostic popup on cursor hover
+autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
