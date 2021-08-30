@@ -8,8 +8,8 @@ let mapleader = " " " -- leader set to <space>
 " |    SET OPTIONS       |
 " ++++++++++++++++++++++++
 "
-set tabstop=4 softtabstop=4
-set shiftwidth=4
+set tabstop=4 softtabstop=2
+set shiftwidth=2
 set expandtab
 set smartindent
 set nu
@@ -76,10 +76,34 @@ Plug 'nvim-lua/completion-nvim'
 " Ayu Nvim color scheme
 Plug 'ayu-theme/ayu-vim'
 
-call plug#end()
-let ayucolor="mirage"
-colorscheme ayu
+" Moonlight colour scheme
+Plug 'shaunsingh/moonlight.nvim'
 
+" This is the way
+Plug 'folke/tokyonight.nvim', { 'branch': 'main' }
+
+" Nightfly colors 
+Plug 'bluz71/vim-nightfly-guicolors'
+
+" Vim telescope & treesitterc
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
+Plug 'hoob3rt/lualine.nvim'
+" If you want to have icons in your statusline choose one of these
+Plug 'kyazdani42/nvim-web-devicons'
+
+call plug#end()
+" ayu
+"let ayucolor="mirage"
+"colorscheme ayu
+" moonlight
+ "colorscheme moonlight
+" nightfly
+"colorscheme nightfly
+" Tokyo night
+let g:tokyonight_style = "night"
+colorscheme tokyonight
 " ++++++++++++++
 " |  KEY MAPS  |
 " ++++++++++++++
@@ -89,6 +113,9 @@ nnoremap <leader>h :wincmd h<CR>
 nnoremap <leader>j :wincmd j<CR>
 nnoremap <leader>k :wincmd k<CR>
 nnoremap <leader>l :wincmd l<CR>
+
+" Buffers
+nnoremap <leader>c :bd <CR>
 
 " NOTE: use ':verbose imap <tab>' to make sure
 " it is not mapped to something else.
@@ -114,6 +141,14 @@ nnoremap <silent> ]g    <cmd>lua vim.lsp.diagnostic.goto_next()<CR>
 nnoremap <silent> <leader>a <cmd>lua vim.lsp.buf.code_action()<CR>
 nnoremap <silent> <leader>e <cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
 nnoremap <silent> <leader>f <cmd>lua vim.lsp.buf.formatting()<CR>
+
+" Vim telescope
+"
+"nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <C-p> <cmd>lua require('telescope.builtin').find_files()<cr>
+nnoremap <leader>fg <cmd>lua require('telescope.builtin').live_grep()<cr>
+nnoremap <leader>fb <cmd>lua require('telescope.builtin').buffers()<cr>
+nnoremap <leader>fh <cmd>lua require('telescope.builtin').help_tags()<cr>
 
 " ++++++++++++
 " |   LSP    |
@@ -160,6 +195,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
   }
 )
 
+
 EOF
 
 " Enable type inlay hints
@@ -167,3 +203,43 @@ autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *
 \ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
 " Show diagnostic popup on cursor hover
 autocmd CursorHold * lua vim.lsp.diagnostic.show_line_diagnostics()
+
+"
+" +++++++++
+" |  LUA  |
+" +++++++++
+lua << EOF
+-- set-up lua line
+require'lualine'.setup {
+  options = {
+    icons_enabled = true,
+    theme = 'tokyonight',
+    component_separators = {'|', '|'},
+    section_separators = {'', ''},
+    disabled_filetypes = {}
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch',{'filename', file_status=true, path = 1}},
+    lualine_c = {'diagnostics'},
+    lualine_x = {
+        'encoding', 
+        'filetype'
+    },
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  extensions = {}
+}
+
+
+EOF

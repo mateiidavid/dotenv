@@ -15,5 +15,11 @@ for f in $files; do
 	rm -rf $INSTALL_PATH/$f
 	ln -s $REPO_PATH/$f $INSTALL_PATH/$f
 done
+files=$(find . | grep -e '.*\.lua$')
+for f in $files; do
+	echo "Linking $f"
+	rm -rf $INSTALL_PATH/$f
+	ln -s $REPO_PATH/$f $INSTALL_PATH/$f
+done
 echo "Done!"
 
