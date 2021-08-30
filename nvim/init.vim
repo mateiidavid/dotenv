@@ -92,6 +92,8 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'hoob3rt/lualine.nvim'
 " If you want to have icons in your statusline choose one of these
 Plug 'kyazdani42/nvim-web-devicons'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'tpope/vim-fugitive'
 
 call plug#end()
 " ayu
@@ -241,5 +243,14 @@ require'lualine'.setup {
   extensions = {}
 }
 
-
+require'nvim-treesitter.configs'.setup {
+ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua"}, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ignore_install = { "javascript" }, -- List of parsers to ignore installing
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+    --disable = { "c", "rust" },  -- list of language that will be disabled
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+  },
+}
 EOF
