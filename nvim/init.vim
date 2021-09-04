@@ -28,6 +28,7 @@ set scrolloff=8
 "set termguicolors
 set colorcolumn=120
 highlight ColorColumn ctermbg=0 guibg=lightgrey
+set textwidth=80
 set formatoptions=tc " -- wrap text and comments using textwidth
 set formatoptions+=r " -- continue comments when pressing ENTER in I mode
 set formatoptions+=b " -- auto-wrap in insert mode, and do not wrap old long lines
@@ -66,6 +67,10 @@ call plug#begin('~/.vim/plugged')
 
 " Collection of common configurations for the Nvim LSP client
 Plug 'neovim/nvim-lspconfig'
+Plug 'simrat39/rust-tools.nvim'
+
+" Optional dependencies
+Plug 'nvim-lua/popup.nvim'
 
 " Extensions to built-in LSP, for example, providing type inlay hints
 Plug 'nvim-lua/lsp_extensions.nvim'
@@ -104,7 +109,7 @@ call plug#end()
 " nightfly
 "colorscheme nightfly
 " Tokyo night
-let g:tokyonight_style = "night"
+let g:tokyonight_style = "storm"
 colorscheme tokyonight
 " ++++++++++++++
 " |  KEY MAPS  |
@@ -118,6 +123,8 @@ nnoremap <leader>l :wincmd l<CR>
 
 " Buffers
 nnoremap <leader>c :bd <CR>
+" Switch buffer
+nnoremap <leader><leader> <c-^>
 
 " NOTE: use ':verbose imap <tab>' to make sure
 " it is not mapped to something else.
@@ -171,14 +178,23 @@ end
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
+-- Rust tools takes care of lsp for us.
+require('rust-tools').setup{
+  tools = {
+    autoSetHints = true, -- inlay (type) hints
+    hover_with_actions = false, -- show hover actions inside hover window}
+  },
+  
+}
 -- Enable rust_analyzer
-nvim_lsp.rust_analyzer.setup({
-    capabilities=capabilities,
-    on_attach=on_attach
-})
+-- nvim_lsp.rust_analyzer.setup({
+    -- capabilities=capabilities,
+    -- on_attach=on_attach
+-- })
 
 -- Enable gopls
 nvim_lsp.gopls.setup{
+    root_dir = nvim_lsp.util.root_pattern('go.mod');
     cmd = {"gopls", "--remote=auto"},
     capabilities=capabilities,
     on_attach=on_attach,
@@ -223,7 +239,7 @@ require'lualine'.setup {
   sections = {
     lualine_a = {'mode'},
     lualine_b = {'branch',{'filename', file_status=true, path = 1}},
-    lualine_c = {'diagnostics'},
+    lualine_c = {{'diagnostics', sources=nvim_lsp, sections = {'error', 'warn'}}},
     lualine_x = {
         'encoding', 
         'filetype'
@@ -244,7 +260,8 @@ require'lualine'.setup {
 }
 
 require'nvim-treesitter.configs'.setup {
-ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua"}, -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua"}, -- one
+  -- of "all", "maintained" (parsers with maintainers), or a list of languages
   ignore_install = { "javascript" }, -- List of parsers to ignore installing
   highlight = {
     enable = true,              -- false will disable the whole extension
@@ -253,4 +270,8 @@ ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua"}, -- one of
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
   },
 }
+
+-- add autocmd for rust ft when language server is not activated.
+-- should work for buffers w/o cargo toml in root
+-- trigger dis: RustStartStandaloneServerForBuffer
 EOF
