@@ -8,9 +8,9 @@ local cmd = vim.cmd -- alias to execute Vim commands, e.g cmd('pwd')
 local fn = vim.fn -- alias to call Vim functions, e.g :fn.bufnr()
 local g = vim.g -- alias to a table to access global variables
 
-vim.g.mapleader = ","
+vim.g.mapleader = " "
 
-require('options')
+require('settings')
 
 -- set-up packer
 require('packer').startup(function ()
