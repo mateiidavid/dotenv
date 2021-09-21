@@ -1,4 +1,4 @@
-local vim = vim
+local global = require('settings.global')
 
 local function bind_options(options)
   for k, v in pairs(options) do
@@ -17,7 +17,7 @@ local function load_options()
     hidden = true;
     magic = true; -- allows escaping chars
     encoding = "utf-8";
-    undodir = "~/.nvim/undodir";
+    undodir = global.cache_dir.."undo/";
     clipboard = "unnamedplus";
     swapfile = false;
     backup = false;
