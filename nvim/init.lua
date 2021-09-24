@@ -19,6 +19,16 @@ require('packer').startup(function ()
   -- --- LSP Config -- 
   use 'neovim/nvim-lspconfig' -- lspconfig
   use 'glepnir/lspsaga.nvim'
+  use 'simrat39/rust-tools.nvim'
+  use {
+  'lewis6991/gitsigns.nvim',
+  requires = {
+    'nvim-lua/plenary.nvim'
+  },
+  config = function()
+    require('gitsigns').setup()
+  end
+}
 
   -- --- Util ---
   use {
@@ -26,12 +36,17 @@ require('packer').startup(function ()
   requires = { {'nvim-lua/plenary.nvim'} }
   }
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+  
 
-
-  -- --- Themes ---
+  -- --- Themes/UI ---
   use 'ayu-theme/ayu-vim'
+  use 'tpope/vim-fugitive'
   use 'shaunsingh/moonlight.nvim'
   use 'folke/tokyonight.nvim' 
+  use {
+  'hoob3rt/lualine.nvim',
+  requires = {'kyazdani42/nvim-web-devicons', opt = true}
+  }
 end)
 
 cmd[[colorscheme tokyonight]] -- set color theme
@@ -45,3 +60,40 @@ vim.api.nvim_set_keymap('n', '<leader>l', ':wincmd l<CR>', {noremap = true})
 -- switch & delete buffers
 vim.api.nvim_set_keymap('n', '<leader><leader>', '<c-^>', {noremap = true})
 vim.api.nvim_set_keymap('n', '<leader>c', ':bd <CR>', {noremap = true})
+vim.api.nvim_set_keymap('n', '<C-p>', ":Telescope find_files<CR>", {noremap=true})
+--vim.api.nvim_set_keymap('n', '<leader>b', ":Telescope buffers<CR>", {noremap=true})
+--vim.api.nvim_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', {noremap=true})
+
+
+require'lualine'.setup {
+  options = {
+    icons_enabled = true,
+    theme = 'tokyonight',
+    component_separators = {'|', '|'},
+    section_separators = {'', ''},
+    disabled_filetypes = {}
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch',{'filename', file_status=true, path = 1}},
+    lualine_c = {'diagnostics'},
+    lualine_x = {
+        'encoding', 
+        'filetype'
+    },
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  extensions = {}
+}
+
+require'lang-conf'
