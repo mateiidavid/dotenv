@@ -69,7 +69,7 @@ local key_maps = {
   {mode = 'n', lhs = '<C-k>', rhs = ':wincmd k<CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<C-l>', rhs = ':wincmd l<CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<leader>c', rhs = ':bd <CR>', opts = {noremap = true}},
-  {mode = 'n', lhs = '<C-p>c', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
 
 }
 -- TODO: move this into util file
