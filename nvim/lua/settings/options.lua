@@ -13,7 +13,7 @@ end
 local function load_options()
   local global_local = {
     termguicolors = true;
-    mouse = a;
+    mouse = 'a';
     hidden = true;
     magic = true; -- allows escaping chars
     encoding = "utf-8";
@@ -43,6 +43,7 @@ local function load_options()
    smartindent = true;
    tabstop = 4;
    softtabstop = 2;
+   shiftwidth = 2;
    number = true;
    relativenumber = true;
    colorcolumn = 100;

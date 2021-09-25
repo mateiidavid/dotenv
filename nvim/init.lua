@@ -36,64 +36,64 @@ require('packer').startup(function ()
   requires = { {'nvim-lua/plenary.nvim'} }
   }
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+  use { 
+    'windwp/nvim-autopairs',
+    config = function()
+      require'nvim-autopairs'.setup({
+        disable_filetype= {"TelescopePrompt"}
+      })
+    end
+  } 
   
-
   -- --- Themes/UI ---
   use 'ayu-theme/ayu-vim'
   use 'tpope/vim-fugitive'
   use 'shaunsingh/moonlight.nvim'
   use 'folke/tokyonight.nvim' 
   use {
-  'hoob3rt/lualine.nvim',
-  requires = {'kyazdani42/nvim-web-devicons', opt = true}
+    'beauwilliams/statusline.lua',
+    requires = {
+      {'kyazdani42/nvim-web-devicons', opt = true},
+      {'nvim-lua/lsp-status.nvim'},
+      {'kosayoda/nvim-lightbulb'},
+    }      
   }
+  
 end)
 
 cmd[[colorscheme tokyonight]] -- set color theme
 
+local key_maps = {
+  {mode = 'n', lhs = '<C-h>', rhs = ':wincmd h<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<C-j>', rhs = ':wincmd j<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<C-k>', rhs = ':wincmd k<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<C-l>', rhs = ':wincmd l<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<leader>c', rhs = ':bd <CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<C-p>c', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
+
+}
+-- TODO: move this into util file
+-- re-use it for lang srv
+local set_key = function(maps) 
+  for _, v in pairs(maps) do
+    vim.api.nvim_set_keymap(v.mode, v.lhs, v.rhs, v.opts)
+  end
+end 
+
+set_key(key_maps)
 -- Maps
 -- vim.api.nvim_set_keymap(mode, lhs, rhs, options)
-vim.api.nvim_set_keymap('n', '<leader>h', ':wincmd h<CR>', {noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>j', ':wincmd j<CR>', {noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>k', ':wincmd k<CR>', {noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>l', ':wincmd l<CR>', {noremap = true})
--- switch & delete buffers
-vim.api.nvim_set_keymap('n', '<leader><leader>', '<c-^>', {noremap = true})
-vim.api.nvim_set_keymap('n', '<leader>c', ':bd <CR>', {noremap = true})
-vim.api.nvim_set_keymap('n', '<C-p>', ":Telescope find_files<CR>", {noremap=true})
+--vim.api.nvim_set_keymap('n', '<leader>h', ':wincmd h<CR>', {noremap = true})
+--vim.api.nvim_set_keymap('n', '<leader>j', ':wincmd j<CR>', {noremap = true})
+--vim.api.nvim_set_keymap('n', '<leader>k', ':wincmd k<CR>', {noremap = true})
+--vim.api.nvim_set_keymap('n', '<leader>l', ':wincmd l<CR>', {noremap = true})
+---- switch & delete buffers
+--vim.api.nvim_set_keymap('n', '<leader><leader>', '<c-^>', {noremap = true})
+--vim.api.nvim_set_keymap('n', '<leader>c', ':bd <CR>', {noremap = true})
+--vim.api.nvim_set_keymap('n', '<C-p>', ":Telescope find_files<CR>", {noremap=true})
 --vim.api.nvim_set_keymap('n', '<leader>b', ":Telescope buffers<CR>", {noremap=true})
 --vim.api.nvim_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', {noremap=true})
 
 
-require'lualine'.setup {
-  options = {
-    icons_enabled = true,
-    theme = 'tokyonight',
-    component_separators = {'|', '|'},
-    section_separators = {'', ''},
-    disabled_filetypes = {}
-  },
-  sections = {
-    lualine_a = {'mode'},
-    lualine_b = {'branch',{'filename', file_status=true, path = 1}},
-    lualine_c = {'diagnostics'},
-    lualine_x = {
-        'encoding', 
-        'filetype'
-    },
-    lualine_y = {'progress'},
-    lualine_z = {'location'}
-  },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = {'filename'},
-    lualine_x = {'location'},
-    lualine_y = {},
-    lualine_z = {}
-  },
-  tabline = {},
-  extensions = {}
-}
-
+local statusline = require('statusline')
 require'lang-conf'
