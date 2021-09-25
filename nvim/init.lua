@@ -19,6 +19,7 @@ require('packer').startup(function ()
   -- --- LSP Config -- 
   use 'neovim/nvim-lspconfig' -- lspconfig
   use 'glepnir/lspsaga.nvim'
+  use 'nvim-lua/completion-nvim'
   use 'simrat39/rust-tools.nvim'
   use {
   'lewis6991/gitsigns.nvim',
@@ -70,6 +71,7 @@ local key_maps = {
   {mode = 'n', lhs = '<C-l>', rhs = ':wincmd l<CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<leader>c', rhs = ':bd <CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
 
 }
 -- TODO: move this into util file
@@ -81,6 +83,7 @@ local set_key = function(maps)
 end 
 
 set_key(key_maps)
+cmd[[command! Bufs :buffers]]
 -- Maps
 -- vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 --vim.api.nvim_set_keymap('n', '<leader>h', ':wincmd h<CR>', {noremap = true})

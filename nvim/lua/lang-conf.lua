@@ -24,7 +24,7 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>a', '<cmd>lua lua require(\'lspsaga.codeaction\').code_action()<CR>', opts)
+  buf_set_keymap('n', '<space>a', '<cmd>lua require(\'lspsaga.codeaction\').code_action()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap('n', '<space>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   buf_set_keymap('n', '[g', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
@@ -34,6 +34,7 @@ local on_attach = function(client, bufnr)
 
   -- Add lsp status
   lsp_status.on_attach(client)
+  require'completion'.on_attach()
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -58,7 +59,7 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
 lspconfig.gopls.setup {
   cmd = {"gopls","--remote=auto"},
   on_attach = on_attach,
-  capabilities = capabilities,
+  capabilities = status_capabilities,
   init_options = {
     usePlaceholders=true,
     completeUnimported=true,
@@ -67,10 +68,10 @@ lspconfig.gopls.setup {
 
 lspconfig.rust_analyzer.setup {
   on_attach = on_attach,
-  capabilities = capabilities,
+  capabilities = status_capabilities,
 }
 
-require('rust-tools').setup({})
+--require('rust-tools').setup({})
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua"}, -- one
