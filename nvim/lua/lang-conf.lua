@@ -3,6 +3,19 @@ local lspconfig = require 'lspconfig'
 local saga = require'lspsaga'
 local lsp_status = require('lsp-status')
 
+local format_async = function(bufnr, err, _, result, _)
+  if err ~= nil or result == nil then return end
+  if not vim.api.nvim_buf_get_option(bufnr, 'modified') then
+    local view = vim.fn.winsaveview()
+    vim.lsp.util.apply_text_edits(result, bufnr)
+    vim.fn.winrestview(view)
+    if bufnr == vim.api.nvim_get_current_buf() then
+      vim.api.nvim_command("noautocmd :update")
+    end
+  end
+end
+
+
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
@@ -15,7 +28,7 @@ local on_attach = function(client, bufnr)
 
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  buf_set_keymap('n', 'gd', '<cmd>lua require(\'lspsaga.hover\').render_hover_doc()', opts)
+  buf_set_keymap('n', 'gd', '<cmd>lua require(\'lspsaga.hover\').render_hover_doc()<CR>', opts)
   buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
@@ -32,9 +45,22 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
+  buf_set_option("textwidth", 80)
+
+vim.api.nvim_buf_set_option(bufnr, "formatoptions", "tc".."r".."b")
   -- Add lsp status
   lsp_status.on_attach(client)
   require'completion'.on_attach()
+  
+  vim.cmd("command! LspFormatting lua vim.lsp.buf.formatting()")
+  if client.resolved_capabilities.document_formatting then
+        vim.api.nvim_exec([[
+         augroup LspAutocommands
+             autocmd! * <buffer>
+             autocmd BufWritePost <buffer> LspFormatting
+         augroup END
+         ]], true)
+    end
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()
@@ -84,3 +110,13 @@ require'nvim-treesitter.configs'.setup {
     -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
   },
 }
+
+local function t(str)
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
+function _G.smart_tab()
+    return vim.fn.pumvisible() == 1 and t'<C-n>' or t'<Tab>'
+end
+
+vim.api.nvim_set_keymap('i', '<Tab>', 'v:lua.smart_tab()', {expr = true, noremap = true})

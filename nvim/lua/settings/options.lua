@@ -37,7 +37,6 @@ local function load_options()
 
  local bufw_local = {
    undofile = true;
-   textwidth = 80;
    expandtab = true;
    autoindent = true;
    smartindent = true;
