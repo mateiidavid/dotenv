@@ -100,3 +100,4 @@ cmd[[command! Bufs :buffers]]
 
 local statusline = require('statusline')
 require'lang-conf'
+require'lspsaga'.init_lsp_saga()
