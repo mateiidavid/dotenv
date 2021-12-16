@@ -47,6 +47,7 @@ require('packer').startup(function ()
   } 
   
   -- --- Themes/UI ---
+  use 'EdenEast/nightfox.nvim'
   use 'ayu-theme/ayu-vim'
   use 'tpope/vim-fugitive'
   use 'shaunsingh/moonlight.nvim'
@@ -62,7 +63,8 @@ require('packer').startup(function ()
   
 end)
 
-cmd[[colorscheme tokyonight]] -- set color theme
+-- cmd[[colorscheme tokyonight]] -- set color theme
+require('nightfox').load('nightfox')
 
 local key_maps = {
   {mode = 'n', lhs = '<C-h>', rhs = ':wincmd h<CR>', opts = {noremap = true}},
@@ -72,7 +74,6 @@ local key_maps = {
   {mode = 'n', lhs = '<leader>c', rhs = ':bd <CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
-
 }
 -- TODO: move this into util file
 -- re-use it for lang srv
@@ -100,4 +101,3 @@ cmd[[command! Bufs :buffers]]
 
 local statusline = require('statusline')
 require'lang-conf'
-require'lspsaga'.init_lsp_saga()
