@@ -1,6 +1,4 @@
-local api = vim.api
 local lspconfig = require 'lspconfig'
-local saga = require'lspsaga'
 local lsp_status = require('lsp-status')
 local remap = vim.api.nvim_set_keymap
 local npairs = require('nvim-autopairs')
@@ -17,8 +15,6 @@ local format_async = function(bufnr, err, _, result, _)
   end
 end
 
-_G.MUtils= {}
-vim.g.completion_confirm_key = ""
 
 MUtils.completion_confirm=function()
   if vim.fn.pumvisible() ~= 0  then
@@ -47,19 +43,19 @@ local on_attach = function(client, bufnr)
 
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  buf_set_keymap('n', 'gh', '<cmd> lua require(\'lspsaga.provider\'.lsp_finder()<CR>', opts)
+  buf_set_keymap('n', 'gh', '<cmd>lua require(\'lspsaga.provider\').lsp_finder()<CR>', opts)
   buf_set_keymap('n', 'gD', '<cmd>lua require(\'lspsaga.provider\').preview_definition()<CR>', opts)
   buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
   buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   buf_set_keymap('n', 'gs', '<cmd>lua require(\'lspsaga.signaturehelp\').signature_help()<CR>', opts)
-  buf_set_keymap('n', '<space>e', '<cmd>lua require(\'lspsaga.diagnostic\').show_line_diagnostics()<CR>', opts)
+  buf_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
   buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   buf_set_keymap('n', '<space>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   buf_set_keymap('n', '<space>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   buf_set_keymap('n', '<space>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   buf_set_keymap('n', '<space>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  buf_set_keymap('n', '<space>a', '<cmd>lua require(\'lspsaga.codeaction\').code_action()<CR>', opts)
+  buf_set_keymap('n', '<space>a', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
   buf_set_keymap('n', '[g', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   buf_set_keymap('n', ']g', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
@@ -68,7 +64,8 @@ local on_attach = function(client, bufnr)
 
   buf_set_option("textwidth", 80)
 
-vim.api.nvim_buf_set_option(bufnr, "formatoptions", "tc".."r".."b")
+-- Remove 't'? added 'q', 'j'
+vim.api.nvim_buf_set_option(bufnr, "formatoptions", "c".."r".."q".."b".."j")
   -- Add lsp status
   lsp_status.on_attach(client)
   require'completion'.on_attach()
@@ -114,9 +111,45 @@ lspconfig.gopls.setup {
   }
 }
 
+--   ////////////
+--  /// RUST ///
+--  ////////////
+
 lspconfig.rust_analyzer.setup {
   on_attach = on_attach,
   capabilities = status_capabilities,
+}
+
+-- ////////////
+-- /// lua ///
+-- //////////
+local runtime_path = vim.split(package.path, ';')
+table.insert(runtime_path, "lua/?.lua")
+table.insert(runtime_path, "lua/?/init.lua")
+
+require'lspconfig'.sumneko_lua.setup {
+  settings = {
+    Lua = {
+      runtime = {
+        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim)
+        version = 'LuaJIT',
+        -- Setup your lua path
+        path = runtime_path,
+      },
+      diagnostics = {
+        -- Get the language server to recognize the `vim` global
+        globals = {'vim'},
+      },
+      workspace = {
+        -- Make the server aware of Neovim runtime files
+        library = vim.api.nvim_get_runtime_file("", true),
+      },
+      -- Do not send telemetry data containing a randomized but unique identifier
+      telemetry = {
+        enable = false,
+      },
+    },
+  },
 }
 
 --require('rust-tools').setup({})
@@ -133,13 +166,3 @@ require'nvim-treesitter.configs'.setup {
   },
   autopairs = {enable = true }
 }
-
-local function t(str)
-    return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-function _G.smart_tab()
-    return vim.fn.pumvisible() == 1 and t'<C-n>' or t'<Tab>'
-end
-
-vim.api.nvim_set_keymap('i', '<Tab>', 'v:lua.smart_tab()', {expr = true, noremap = true})
