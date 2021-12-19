@@ -1,42 +1,10 @@
 local lspconfig = require 'lspconfig'
 local lsp_status = require('lsp-status')
 local remap = vim.api.nvim_set_keymap
-local npairs = require('nvim-autopairs')
-
-local format_async = function(bufnr, err, _, result, _)
-  if err ~= nil or result == nil then return end
-  if not vim.api.nvim_buf_get_option(bufnr, 'modified') then
-    local view = vim.fn.winsaveview()
-    vim.lsp.util.apply_text_edits(result, bufnr)
-    vim.fn.winrestview(view)
-    if bufnr == vim.api.nvim_get_current_buf() then
-      vim.api.nvim_command("noautocmd :update")
-    end
-  end
-end
-
-
-MUtils.completion_confirm=function()
-  if vim.fn.pumvisible() ~= 0  then
-    if vim.fn.complete_info()["selected"] ~= -1 then
-      require'completion'.confirmCompletion()
-      return npairs.esc("<c-y>")
-    else
-      vim.api.nvim_select_popupmenu_item(0 , false , false ,{})
-      require'completion'.confirmCompletion()
-      return npairs.esc("<c-n><c-y>")
-    end
-  else
-    return npairs.autopairs_cr()
-  end
-end
 
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
   local function buf_set_option(...) vim.api.nvim_buf_set_option(bufnr, ...) end
-
-  -- Enable completion triggered by <c-x><c-o>
-  buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   -- Mappings.
   local opts = { noremap=true, silent=true }
@@ -68,18 +36,6 @@ local on_attach = function(client, bufnr)
 vim.api.nvim_buf_set_option(bufnr, "formatoptions", "c".."r".."q".."b".."j")
   -- Add lsp status
   lsp_status.on_attach(client)
-  require'completion'.on_attach()
-  
-  vim.cmd("command! LspFormatting lua vim.lsp.buf.formatting()")
-  if client.resolved_capabilities.document_formatting then
-        vim.api.nvim_exec([[
-         augroup LspAutocommands
-             autocmd! * <buffer>
-             autocmd BufWritePost <buffer> LspFormatting
-         augroup END
-         ]], true)
-    end
-remap('i' , '<CR>','v:lua.MUtils.completion_confirm()', {expr = true , noremap = true})
 end
 
 local capabilities = vim.lsp.protocol.make_client_capabilities()

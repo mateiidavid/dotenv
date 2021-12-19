@@ -19,7 +19,6 @@ require('packer').startup(function ()
   -- --- LSP Config -- 
   use 'neovim/nvim-lspconfig' -- lspconfig
   use 'glepnir/lspsaga.nvim'
-  use 'nvim-lua/completion-nvim'
   use 'simrat39/rust-tools.nvim'
   use {
   'lewis6991/gitsigns.nvim',
