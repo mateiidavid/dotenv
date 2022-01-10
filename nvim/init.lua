@@ -62,8 +62,9 @@ require('packer').startup(function ()
   
 end)
 
--- cmd[[colorscheme tokyonight]] -- set color theme
-require('nightfox').load('nightfox')
+ vim.g.tokyonight_style = "night"
+ cmd[[colorscheme tokyonight]] -- set color theme
+--require('nightfox').load('nightfox')
 
 local key_maps = {
   {mode = 'n', lhs = '<C-h>', rhs = ':wincmd h<CR>', opts = {noremap = true}},
@@ -80,7 +81,7 @@ local set_key = function(maps)
   for _, v in pairs(maps) do
     vim.api.nvim_set_keymap(v.mode, v.lhs, v.rhs, v.opts)
   end
-end 
+end
 
 set_key(key_maps)
 cmd[[command! Bufs :buffers]]
