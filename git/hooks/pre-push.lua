@@ -18,9 +18,6 @@ local ANSI_BOLD = "\27[1m"
 local ANSI_GREEN = "\27[32m"
 local HOOK_NAME = "\27[96;4m[git-pre-push-hook]\27[0m "
 
-for k, v in ipairs(arg) do
-  print("Key: "..k.." value: "..v)
-end
 -- Execute takes in a command as a string and calls out into the shell to
 -- execute it. We start a sub process using `io.popen` and then use the handle
 -- to read the output from the command.
@@ -54,7 +51,8 @@ if PROTECTED_BRANCHES[branch_name] then
   local confirm
   repeat
     print(push_msg)
-    confirm = io.read(1)
+    local tty_handle = io.open("/dev/tty")
+    confirm = tty_handle:read(1)
     if not confirm then return end   -- no input
     confirm = confirm:lower()
   until confirm == "y" or confirm == "n"
