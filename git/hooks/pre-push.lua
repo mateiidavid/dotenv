@@ -16,7 +16,7 @@ local ANSI_RESET = "\27[0m"
 local ANSI_WHITE_BOLD = "\27[37;1;4m" -- 4 is for underline
 local ANSI_BOLD = "\27[1m"
 local ANSI_GREEN = "\27[32m"
-local HOOK_NAME = "\27[96;4m[git-pre-push-hook]\27[0m "
+local HOOK_NAME = "\27[96;4m[git-push-hook-check]\27[0m "
 
 -- Execute takes in a command as a string and calls out into the shell to
 -- execute it. We start a sub process using `io.popen` and then use the handle
