@@ -47,7 +47,7 @@ end
 local branch_name = try_execute(CMD_GIT_BRANCH)
 branch_name = string.gsub(branch_name, '\n', '')
 if PROTECTED_BRANCHES[branch_name] then
-  local push_msg = HOOK_NAME..ANSI_GREEN.."\27[4;1mSure\27[0;32m you want to push to ["..ANSI_WHITE_BOLD..branch_name..ANSI_RESET..ANSI_GREEN.."]?"..ANSI_RESET..ANSI_BOLD.." (Y/N)"..ANSI_RESET
+  local push_msg = HOOK_NAME..ANSI_GREEN.."\27[4;1mSure\27[0;32m you want to push to ["..ANSI_WHITE_BOLD..branch_name..ANSI_RESET..ANSI_GREEN.."]?"..ANSI_RESET..ANSI_BOLD.." (Y/n)"..ANSI_RESET
   local confirm
   repeat
     print(push_msg)
