@@ -7,8 +7,8 @@ local function bind_options(options)
     else
       vim.cmd('set '..k..'='..v)
     end
-  end 
-end 
+  end
+end
 
 local function load_options()
   local global_local = {
@@ -33,6 +33,7 @@ local function load_options()
     scrolloff = 8;
     shortmess = "aoOTIcF";
     previewheight = 12;
+    diffopt = "vertical,algorithm:patience,indent-heuristic,context:10";
   }
 
  local bufw_local = {

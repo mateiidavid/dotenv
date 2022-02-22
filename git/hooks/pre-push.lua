@@ -9,7 +9,7 @@ local CMD_GIT_REPO = 'git rev-parse --show-toplevel'
 
 local PROTECTED_BRANCHES = {['main'] = true, ['master'] = true, ['add-git-hook'] = true}
 
-local PROTECTED_REPOS = {['linkerd2'] = true, ['linkerd2-proxy'] = true, ['dotfiles'] = true}
+local PROTECTED_REPOS = {['linkerd2'] = true, ['linkerd2-proxy'] = true, ['dotfiles'] = true, ['*'] = true}
 
 local ANSI_RED = "\27[31m"
 local ANSI_RESET = "\27[0m"
@@ -40,7 +40,7 @@ end
 
 local repo_path = try_execute(CMD_GIT_REPO)
 local repo_name = string.match(repo_path, "/%a+/.+/(%a+)")
-if not PROTECTED_REPOS[repo_name] then
+if not PROTECTED_REPOS[repo_name] and not PROTECTED_REPOS['*'] then
   os.exit()
 end
 
