@@ -18,7 +18,7 @@ require('packer').startup(function ()
   
   -- --- LSP Config -- 
   use 'neovim/nvim-lspconfig' -- lspconfig
-  use 'glepnir/lspsaga.nvim'
+  use 'glepnir/lspsaga.nvim' -- think this is deprecated? not worked on at any rate
   use 'simrat39/rust-tools.nvim'
   use {
   'lewis6991/gitsigns.nvim',
@@ -30,6 +30,19 @@ require('packer').startup(function ()
   end
 }
 
+  use 'L3MON4D3/LuaSnip'
+  use {
+    "hrsh7th/nvim-cmp",
+    requires = {
+        'hrsh7th/cmp-nvim-lsp',
+        'hrsh7th/cmp-buffer',
+        'hrsh7th/cmp-path',
+        'hrsh7th/cmp-cmdline',
+        'hrsh7th/nvim-cmp',
+        'saadparwaiz1/cmp_luasnip',
+
+    }
+  }
   -- --- Util ---
   use {
   'nvim-telescope/telescope.nvim',
@@ -43,7 +56,7 @@ require('packer').startup(function ()
         disable_filetype= {"TelescopePrompt"}
       })
     end
-  } 
+  }
   
   -- --- Themes/UI ---
   use 'EdenEast/nightfox.nvim'
@@ -101,3 +114,4 @@ cmd[[command! Bufs :buffers]]
 
 local statusline = require('statusline')
 require'lang-conf'
+

@@ -29,7 +29,7 @@ local function load_options()
     incsearch = true;
     splitbelow = true;
     splitright = true;
-    completeopt = "menuone,noselect"; -- noinsert?
+    completeopt = "menu,menuone,noselect"; -- noinsert?
     scrolloff = 8;
     shortmess = "aoOTIcF";
     previewheight = 12;

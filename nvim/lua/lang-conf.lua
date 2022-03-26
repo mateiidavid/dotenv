@@ -1,6 +1,7 @@
 local lspconfig = require 'lspconfig'
 local lsp_status = require('lsp-status')
 local remap = vim.api.nvim_set_keymap
+local cmp = require'cmp'
 
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
@@ -38,10 +39,6 @@ vim.api.nvim_buf_set_option(bufnr, "formatoptions", "c".."r".."q".."b".."j")
   lsp_status.on_attach(client)
 end
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-local status_capabilities = vim.tbl_extend('keep', capabilities or {}, lsp_status.capabilities)
-
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
   vim.lsp.diagnostic.on_publish_diagnostics, {
     -- Enable underline, use default values
@@ -56,11 +53,64 @@ vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
     update_in_insert = false,
 })
 
+--   ////////////
+--  ///  CMP  ///
+--  ////////////
+
+cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    mapping = {
+      ['<C-p>'] = cmp.mapping.select_next_item(),
+      ['<C-n>'] = cmp.mapping.select_prev_item(),
+      ['<C-b>'] = cmp.mapping.scroll_docs(-4), 
+      ['<C-f>'] = cmp.mapping.scroll_docs(4), 
+      ['<C-Space>'] = cmp.mapping.complete(), 
+      ['<C-y>'] = cmp.config.disable, -- Specify `cmp.config.disable` if you want to remove the default `<C-y>` mapping.
+      ['<C-e>'] = cmp.mapping({
+        i = cmp.mapping.abort(),
+        c = cmp.mapping.close(),
+      }),
+      ['<Tab>'] = function(fallback)
+          if cmp.visible() then
+            cmp.select_next_item()
+          elseif luasnip.expand_or_jumpable() then
+            luasnip.expand_or_jump()
+          else
+            fallback()
+          end
+        end,
+    ['<S-Tab>'] = function(fallback)
+          if cmp.visible() then
+            cmp.select_prev_item()
+          elseif luasnip.jumpable(-1) then
+            luasnip.jump(-1)
+          else
+            fallback()
+          end
+        end,
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    },
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'luasnip' }, -- For luasnip users.
+    }, {
+      { name = 'buffer' },
+    })
+})
+
+local lsp_capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
 -- GO
 lspconfig.gopls.setup {
   cmd = {"gopls", "serve"},
   on_attach = on_attach,
-  capabilities = status_capabilities,
+  capabilities = lsp_capabilities,
   init_options = {
     usePlaceholders=true,
     completeUnimported=true,
@@ -73,7 +123,7 @@ lspconfig.gopls.setup {
 
 lspconfig.rust_analyzer.setup {
   on_attach = on_attach,
-  capabilities = status_capabilities,
+  capabilities = lsp_capabilities,
 }
 
 -- ////////////
@@ -83,12 +133,13 @@ local runtime_path = vim.split(package.path, ';')
 table.insert(runtime_path, "lua/?.lua")
 table.insert(runtime_path, "lua/?/init.lua")
 lspconfig.sumneko_lua.setup{
-  on_attach = on_attach
+  on_attach = on_attach,
+  capabilities = lsp_capabilities,
 }
 --require('rust-tools').setup({})
 
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua"}, -- one
+  ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua", "fish", "html", "json"}, -- one
   -- of "all", "maintained" (parsers with maintainers), or a list of languages
   ignore_install = {  }, -- List of parsers to ignore installing
   highlight = {
