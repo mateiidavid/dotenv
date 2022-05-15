@@ -32,7 +32,7 @@ require('packer').startup(function ()
 
   use 'L3MON4D3/LuaSnip'
   use {
-    "hrsh7th/nvim-cmp",
+    "hrsh7th/nvim-cmp", 
     requires = {
         'hrsh7th/cmp-nvim-lsp',
         'hrsh7th/cmp-buffer',
@@ -72,12 +72,23 @@ require('packer').startup(function ()
       {'kosayoda/nvim-lightbulb'},
     }      
   }
+
+  use({
+	"catppuccin/nvim",
+	as = "catppuccin"
+  })
+
+  use {
+  'nvim-lualine/lualine.nvim',
+   requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+  }
   
 end)
 
- vim.g.tokyonight_style = "night"
- cmd[[colorscheme tokyonight]] -- set color theme
+ --vim.g.tokyonight_style = "night"
+ --cmd[[colorscheme tokyonight]] -- set color theme
 --require('nightfox').load('nightfox')
+cmd[[colorscheme catppuccin]]
 
 local key_maps = {
   {mode = 'n', lhs = '<C-h>', rhs = ':wincmd h<CR>', opts = {noremap = true}},
@@ -112,6 +123,41 @@ cmd[[command! Bufs :buffers]]
 --vim.api.nvim_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', {noremap=true})
 
 
-local statusline = require('statusline')
+--local statusline = require('statusline')
 require'lang-conf'
+require('lualine').setup {
+  options = {
+    icons_enabled = true,
+    theme = 'palenight',
+    --component_separators = { left = '', right = ''},
+    component_separators = { left = ' ', right = ' '},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {},
+    always_divide_middle = true,
+    globalstatus = false,
+  },
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff'},
+    lualine_c = {{
+      'filename',
+      file_status = true,
+      path = 1, -- 1 is relative, 2 is abs
+      shorting_target = 50,
+    }},
+    lualine_x = {'diagnostics'},
+    lualine_y = {'encoding', 'fileformat', 'filetype'},
+    lualine_z = {'progress', 'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  extensions = {}
+}
 

@@ -1,5 +1,4 @@
 local lspconfig = require 'lspconfig'
-local lsp_status = require('lsp-status')
 local remap = vim.api.nvim_set_keymap
 local cmp = require'cmp'
 
@@ -35,8 +34,7 @@ local on_attach = function(client, bufnr)
 
 -- Remove 't'? added 'q', 'j'
 vim.api.nvim_buf_set_option(bufnr, "formatoptions", "c".."r".."q".."b".."j")
-  -- Add lsp status
-  lsp_status.on_attach(client)
+
 end
 
 vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(
@@ -140,6 +138,11 @@ lspconfig.sumneko_lua.setup{
   capabilities = lsp_capabilities,
 }
 --require('rust-tools').setup({})
+
+lspconfig.bashls.setup{
+  on_attach = on_attach,
+  capabilities = lsp_capabilities,
+}
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua", "fish", "html", "json"}, -- one
