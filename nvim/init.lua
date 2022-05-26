@@ -11,6 +11,7 @@ local g = vim.g -- alias to a table to access global variables
 vim.g.mapleader = " "
 
 require('settings')
+require'fn'
 
 -- set-up packer
 require('packer').startup(function ()
@@ -97,8 +98,12 @@ local key_maps = {
   {mode = 'n', lhs = '<C-l>', rhs = ':wincmd l<CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<leader>c', rhs = ':bd <CR>', opts = {noremap = true}},
   {mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
-  {mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<leader>fb', rhs = ':Telescope buffers<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<leader>fh', rhs = ':Telescope help_tags<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<leader>fg', rhs = ':Telescope live_grep<CR>', opts = {noremap = true}},
+  {mode = 'n', lhs = '<leader>mp', rhs = ':Telescope man_pages<CR>', opts = {noremap = true}},
 }
+
 -- TODO: move this into util file
 -- re-use it for lang srv
 local set_key = function(maps) 
@@ -109,6 +114,27 @@ end
 
 set_key(key_maps)
 cmd[[command! Bufs :buffers]]
+
+require'telescope'.setup({
+  pickers = {
+    buffers = {
+      theme = "ivy",
+    },
+    live_grep = {
+      theme = "cursor",
+    },
+    help_tags = {
+      theme = "dropdown",
+    },
+    find_files = {
+      theme = "ivy",
+    },
+    man_pages = {
+      theme = "dropdown",
+    },
+  },
+})
+
 -- Maps
 -- vim.api.nvim_set_keymap(mode, lhs, rhs, options)
 --vim.api.nvim_set_keymap('n', '<leader>h', ':wincmd h<CR>', {noremap = true})
