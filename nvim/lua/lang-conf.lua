@@ -25,8 +25,8 @@ local on_attach = function(client, bufnr)
   buf_set_keymap('n', '<space>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
   buf_set_keymap('n', '<space>a', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  buf_set_keymap('n', '[g', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  buf_set_keymap('n', ']g', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
+  buf_set_keymap('n', '[g', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+  buf_set_keymap('n', ']g', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
   buf_set_keymap('n', '<space>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   buf_set_keymap('n', '<space>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
@@ -125,6 +125,13 @@ lspconfig.gopls.setup {
 lspconfig.rust_analyzer.setup {
   on_attach = on_attach,
   capabilities = lsp_capabilities,
+  commands = {
+    Format = {
+      function()
+        require"stylua-nvim".format_file()
+      end,
+    },
+  }
 }
 
 -- ////////////
@@ -144,8 +151,17 @@ lspconfig.bashls.setup{
   capabilities = lsp_capabilities,
 }
 
+require("nvim-treesitter.parsers").get_parser_configs().just = {
+  install_info = {
+    url = "https://github.com/IndianBoy42/tree-sitter-just", -- local path or git repo
+    files = { "src/parser.c", "src/scanner.cc" },
+    branch = "main",
+  },
+  maintainers = { "@IndianBoy42" },
+}
+
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua", "fish", "html", "json"}, -- one
+  ensure_installed = {"c", "rust", "yaml", "toml", "go", "bash", "lua", "fish", "html", "json", "just"}, -- one
   -- of "all", "maintained" (parsers with maintainers), or a list of languages
   ignore_install = {  }, -- List of parsers to ignore installing
   highlight = {
