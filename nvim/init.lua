@@ -17,6 +17,7 @@ require'fn'
 require('packer').startup(function ()
   use 'wbthomason/packer.nvim' -- packer can manage itself, better it autoupdates I guess
   
+  use '/home/matei/workspace/side-projects/blame.nvim'
   -- --- LSP Config -- 
   use 'neovim/nvim-lspconfig' -- lspconfig
   use 'glepnir/lspsaga.nvim' -- think this is deprecated? not worked on at any rate
@@ -44,6 +45,7 @@ require('packer').startup(function ()
 
     }
   }
+  use "ckipp01/stylua-nvim"
   -- --- Util ---
   use {
   'nvim-telescope/telescope.nvim',
@@ -65,14 +67,6 @@ require('packer').startup(function ()
   use 'tpope/vim-fugitive'
   use 'shaunsingh/moonlight.nvim'
   use 'folke/tokyonight.nvim' 
-  use {
-    'beauwilliams/statusline.lua',
-    requires = {
-      {'kyazdani42/nvim-web-devicons', opt = true},
-      {'nvim-lua/lsp-status.nvim'},
-      {'kosayoda/nvim-lightbulb'},
-    }      
-  }
 
   use({
 	"catppuccin/nvim",
@@ -121,7 +115,7 @@ require'telescope'.setup({
       theme = "ivy",
     },
     live_grep = {
-      theme = "cursor",
+      theme = "dropdown",
     },
     help_tags = {
       theme = "dropdown",
@@ -149,7 +143,6 @@ require'telescope'.setup({
 --vim.api.nvim_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', {noremap=true})
 
 
---local statusline = require('statusline')
 require'lang-conf'
 require('lualine').setup {
   options = {
