@@ -12,13 +12,7 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 -- // Plugin set-up
 -- //
 local function telescope_setup()
-    require('utils').map_keys({
-        { mode = 'n', lhs = '<C-p>', rhs = ':Telescope find_files<CR>', opts = { noremap = true } },
-        { mode = 'n', lhs = '<leader>fb', rhs = ':Telescope buffers<CR>', opts = { noremap = true } },
-        { mode = 'n', lhs = '<leader>fh', rhs = ':Telescope help_tags<CR>', opts = { noremap = true } },
-        { mode = 'n', lhs = '<leader>fg', rhs = ':Telescope live_grep<CR>', opts = { noremap = true } },
-        { mode = 'n', lhs = '<leader>mp', rhs = ':Telescope man_pages<CR>', opts = { noremap = true } },
-    })
+    require('mappings').telescope_bindings()
     require('telescope').setup({
         pickers = {
             buffers = {
@@ -104,6 +98,16 @@ local function lualine_setup()
     })
 end
 
+local function bufferline_setup()
+    require('bufferline').setup({
+        options = {
+            mode = 'buffers',
+            numbers = 'ordinal',
+            color_icons = true,
+            show_buffer_default_icon = true,
+        },
+    })
+end
 -- //
 -- // Packer
 -- //
@@ -113,7 +117,6 @@ return require('packer').startup(function(use)
     use('/home/matei/workspace/side-projects/blame.nvim')
     -- --- LSP Config --
     use('neovim/nvim-lspconfig') -- lspconfig
-    use('glepnir/lspsaga.nvim') -- think this is deprecated? not worked on at any rate
     use('simrat39/rust-tools.nvim')
     use({
         'lewis6991/gitsigns.nvim',
@@ -172,7 +175,21 @@ return require('packer').startup(function(use)
 
     use({
         'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true },
+        requires = { 'kyazdani42/nvim-web-devicons' },
         config = lualine_setup,
+    })
+
+    use({
+        'https://git.sr.ht/~whynothugo/lsp_lines.nvim',
+        config = function()
+            require('lsp_lines').setup()
+        end,
+    })
+
+    use({
+        'akinsho/bufferline.nvim',
+        tag = 'v2.*',
+        requires = 'kyazdani42/nvim-web-devicons',
+        config = bufferline_setup,
     })
 end)
