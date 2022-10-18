@@ -1,9 +1,24 @@
 local lspconfig = require('lspconfig')
 
+-- //
+-- // Diagnostics 
+-- //
 -- Disable virtual_text, using lsp_lines
 vim.diagnostic.config({
     virtual_text = false,
     virtual_lines = { only_current_line = true },
+})
+
+
+vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+    -- Enable underline, use default values
+    underline = true,
+    signs = {
+        enable = true,
+        priority = 20,
+    },
+    -- Disable a feature
+    update_in_insert = false,
 })
 
 local on_attach = function(client, bufnr)
@@ -17,17 +32,6 @@ local on_attach = function(client, bufnr)
     -- Remove 't'? added 'q', 'j'
     buf_set_option('formatoptions', 'c' .. 'r' .. 'q' .. 'b' .. 'j')
 end
-
-vim.lsp.handlers['textDocument/publishDiagnostics'] = vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
-    -- Enable underline, use default values
-    underline = true,
-    signs = {
-        enable = true,
-        priority = 20,
-    },
-    -- Disable a feature
-    update_in_insert = false,
-})
 
 -- //
 -- // CMP
@@ -87,7 +91,10 @@ cmp.setup({
 
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
--- GO
+-- //
+-- // LSP Config
+-- //
+-- Go
 lspconfig.gopls.setup({
     cmd = { 'gopls', 'serve' },
     on_attach = on_attach,
@@ -98,10 +105,7 @@ lspconfig.gopls.setup({
     },
 })
 
---   ////////////
---  /// RUST ///
---  ////////////
-
+-- Rust
 lspconfig.rust_analyzer.setup({
     on_attach = on_attach,
     capabilities = lsp_capabilities,
@@ -114,9 +118,7 @@ lspconfig.rust_analyzer.setup({
     },
 })
 
--- ////////////
--- /// lua ///
--- //////////
+-- Lua
 lspconfig.sumneko_lua.setup({
     on_attach = on_attach,
     capabilities = lsp_capabilities,
