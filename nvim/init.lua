@@ -12,8 +12,8 @@ require('mappings').core_bindings()
 cmd([[command! Bufs :buffers]])
 vim.api.nvim_create_autocmd({ 'BufWritePre' }, { pattern = { '*.lua' }, command = 'Format' })
 vim.api.nvim_create_autocmd(
-    { 'BufWritePre' },
-    { pattern = { '*.rs', '*.go' }, callback = vim.lsp.buf.formatting_sync }
+  { 'BufWritePre' },
+  { pattern = { '*.rs', '*.go' }, callback = vim.lsp.buf.formatting_sync }
 )
 --cmd([[autocmd BufWritePre *.lua Format]])
 --cmd([[autocmd BufWritePre *.go vim.lsp.buf.formatting_sync()]])
