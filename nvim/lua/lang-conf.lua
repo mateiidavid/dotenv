@@ -110,13 +110,12 @@ lspconfig.gopls.setup({
 lspconfig.rust_analyzer.setup({
   on_attach = on_attach,
   capabilities = lsp_capabilities,
-  commands = {
-    Format = {
-      function()
-        require('stylua-nvim').format_file()
-      end,
-    },
-  },
+})
+
+-- ccls
+lspconfig.ccls.setup({
+  on_attach = on_attach,
+  capabilities = lsp_capabilities,
 })
 
 -- Lua
