@@ -20,4 +20,3 @@ set -x FZF_DEFAULT_COMMAND "rg --files --hidden"
 # My Fishy conf
 # Starship prompt
 starship init fish | source
-
