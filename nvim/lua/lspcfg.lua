@@ -91,7 +91,7 @@ local function mk_lsp_cfg(mk_default, on_attach_fn, lsp_capabilities_fn)
     },
     rust_analyzer = mk_default(),
     ccls = mk_default(),
-    sumneko_lua = {
+    lua_ls = {
       on_attach = on_attach_fn,
       capabilities = lsp_capabilities_fn,
       commands = {
